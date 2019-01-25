@@ -1,27 +1,39 @@
 import React, { Component } from 'react';
+import queryString from 'query-string';
 
 import { Query } from 'react-apollo';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { RESTAURANT_SEARCH_QUERY } from '../../graphql/queries';
 
 class SearchPage extends Component {
+  state = {
+    address: 'Chicago',
+  }
+
+  componentDidMount() {
+    const { location } = this.props;
+    const { search } = location;
+    const params = queryString.parse(search);
+    const address = params.address;
+    this.setState({
+      ...this.state,
+      address: address || 'Chicago',
+    });
+  }
+
   render() {
     return (
       // Variables can be either lat and lon OR address
       <Query
         query={RESTAURANT_SEARCH_QUERY}
         variables={{
-          address: 'Manhattan'
+          address: this.state,
         }}
       >
         {({ loading, error, data = {} }) => {
           if (loading) {
             return <CircularProgress />;
           }
-
-          console.log('DO SOMETHING SMART WITH THIS DATA');
-          console.log('data', data);
-          console.log('error', error);
 
           // Make sure we have data
           if (
