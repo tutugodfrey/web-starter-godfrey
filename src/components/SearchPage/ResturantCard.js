@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import Grade from '@material-ui/icons/Grade';
 import DirectionsWalk from '@material-ui/icons/DirectionsWalk';
 import Place from '@material-ui/icons/Place';
+import { Link } from 'react-router-dom';
 
 const styles = (theme) => ({
   card: {
@@ -38,6 +39,10 @@ const styles = (theme) => ({
     position: 'relative',
     top: '-5px',
     left: '3px',
+  },
+  link: {
+    textDecoration: 'none',
+    position:'relative',
   }
 });
 
@@ -46,11 +51,9 @@ const ResturantCard = (props) => {
   const { restDetails, showComplete } = props;
   const image = restDetails.images;
   let { distance, title, address } = restDetails;
-  let titleCursor = 'default';
   let addressCursor = 'default';
   if (title.length > 20) {
     title = `${title.substr(0, 20)}...`;
-    titleCursor = 'pointer';
   }
 
   if (address.length > 35) {
@@ -58,24 +61,22 @@ const ResturantCard = (props) => {
     addressCursor = 'pointer';
   }
   distance = distance ? distance.toPrecision(3) : distance;
-  console.log(restDetails);
   return (
     <div variant="contained" className={`${classes.content}`}>
       <Card className={classes.card}>
         <CardContent className={classes.content}>
-          <Fragment>
+          <Link className={classes.link} to={`rest/${restDetails.id}`}>
             <Place color="primary" />
             <Typography
               variant="title"
               color="textSecondary"
-              style={{cursor: titleCursor}}
               onMouseDown={
                 (event) => showComplete(event, restDetails, 'title')}
               className={classes.titleTypograph}
             >
-              { title}
+              {title}
             </Typography>
-          </Fragment>
+          </Link>
           <Typography variant="subtitle3" color="textPrimary">
             {restDetails.cuisine}
           </Typography>
