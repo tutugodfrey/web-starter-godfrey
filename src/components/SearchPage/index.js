@@ -3,7 +3,10 @@ import queryString from 'query-string';
 
 import { Query } from 'react-apollo';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
 import { RESTAURANT_SEARCH_QUERY } from '../../graphql/queries';
+
+import ResturantCard from './ResturantCard';
 
 class SearchPage extends Component {
   state = {
@@ -20,6 +23,26 @@ class SearchPage extends Component {
       address: address || 'Chicago',
     });
   }
+
+  showComplete = (event, restDetails, field) => {
+    if (field === 'address') {
+      const content = event.target.innerHTML;
+      if (content.length > 35 && content.indexOf('...') === -1) {
+        event.target.innerHTML = `${restDetails.address.substr(0, 35)}...`;
+      } else {
+        event.target.innerHTML = restDetails.address;
+      }
+    }
+    if (field === 'title') {
+      const content = event.target.textContent;
+      if (content.length > 20 && content.indexOf('...') === -1) {
+        event.target.textContent = `${restDetails.address.substr(0, 20)}...`;
+      } else {
+        event.target.textContent = restDetails.address;
+      }
+    }
+  }
+
 
   render() {
     return (
@@ -43,9 +66,26 @@ class SearchPage extends Component {
           ) {
             return (
               <div>
-                {data.search_restaurants.results.map((r) => {
-                  return <div>{r.title} ({r.id})</div>;
-                })}
+                <Grid
+                  container
+                  direction="row"
+                  justify="center"
+                  alignItems="center"
+                  spacing={24}
+                >
+                  <Grid clumn item xs={12} sm={12} md={5} lg={4} xl={4}>
+                    {data.search_restaurants.results.map((r) => {
+                      return (
+                        <ResturantCard
+                          restDetails={r}
+                          showComplete={this.showComplete}
+                          showTruncated={this.showTruncated}
+                        />
+                      );
+                    })}
+                  </Grid>
+                  <Grid column xs={12} sm={12} md={7} lg={8} xl={4} />
+                </Grid>
               </div>
             );
           }

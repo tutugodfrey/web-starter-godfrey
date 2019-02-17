@@ -10,11 +10,11 @@ const palette = {
   },
   background: {
     paper: '#fff',
-    default: '#fbf8f5'
+    default: '#e1edfa'
   },
   primary: {
     light: '#462864',
-    main: '#231632',
+    main: '#65a9f3',
     dark: 'rgba(32, 22, 44, 1)',
     contrastText: '#fff',
     bright: '#8930fd',
@@ -33,10 +33,10 @@ const palette = {
     contrastText: '#fff'
   },
   text: {
-    primary: '#231632',
-    secondary: '#bcbabf',
+    primary: '#65a9f3',
+    secondary: '#000000',
     disabled: 'rgba(0, 0, 0, 1)',
-    hint: 'rgba(218, 212, 237, 1)'
+    hint: 'rgba(218, 212, 237, 1)',
   },
   button: {
     standard: '#dfdaf0',
