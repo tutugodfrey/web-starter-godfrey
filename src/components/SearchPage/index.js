@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import { RESTAURANT_SEARCH_QUERY } from '../../graphql/queries';
 
 import ResturantCard from './ResturantCard';
+import Map from '../Map';
 
 class SearchPage extends Component {
   state = {
@@ -43,7 +44,6 @@ class SearchPage extends Component {
     }
   }
 
-
   render() {
     return (
       // Variables can be either lat and lon OR address
@@ -70,10 +70,18 @@ class SearchPage extends Component {
                   container
                   direction="row"
                   justify="center"
-                  alignItems="center"
-                  spacing={24}
+                  style={{height: '100vh' }}
                 >
-                  <Grid clumn item xs={12} sm={12} md={5} lg={4} xl={4}>
+                  <Grid
+                    column
+                    item
+                    xs={12}
+                    sm={12}
+                    md={5}
+                    lg={4}
+                    xl={4}
+                    style={{height: '100vh', overflow: 'scroll' }}
+                  >
                     {data.search_restaurants.results.map((r) => {
                       return (
                         <ResturantCard
@@ -84,7 +92,19 @@ class SearchPage extends Component {
                       );
                     })}
                   </Grid>
-                  <Grid column xs={12} sm={12} md={7} lg={8} xl={4} />
+                  <Grid
+                    id="mapContainer"
+                    column
+                    xs="none"
+                    sm="none"
+                    md={7}
+                    lg={8}
+                    xl={4}
+                  >
+                    <Map
+                      rests={data.search_restaurants.results}
+                    />
+                  </Grid>
                 </Grid>
               </div>
             );
