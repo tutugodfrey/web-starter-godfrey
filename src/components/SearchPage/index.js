@@ -4,14 +4,27 @@ import queryString from 'query-string';
 import { Query } from 'react-apollo';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
+
 import { RESTAURANT_SEARCH_QUERY } from '../../graphql/queries';
 
 import ResturantCard from './ResturantCard';
+import SearchBox from './SearchBox';
 import Map from '../Map';
+
+const styles = {
+  main: {
+    position: 'fixed',
+    top: '5px',
+    zIndex: 50,
+    margin: '4px 10px'
+  }
+};
 
 class SearchPage extends Component {
   state = {
     address: 'Chicago',
+    areaToSearch: '',
   }
 
   componentDidMount() {
@@ -44,13 +57,38 @@ class SearchPage extends Component {
     }
   }
 
+  // triger a search when search icon is click
+  // or when the enter key is pressed
+  getLocation = (event) => {
+    const keycode = (event.keyCode ? event.keyCode : event.which);
+    const { areaToSearch } = this.state;
+    if (keycode === 13 || event.target.id === 'search-icon') {
+      if (!areaToSearch) return;
+      this.setState({
+        ...this.state,
+        address: areaToSearch,
+      });
+    }
+  }
+
+  // get location to search
+  handleChange = (event) => {
+    event.preventDefault();
+    this.setState({
+      ...this.state,
+      areaToSearch: event.target.value,
+    });
+  }
+
   render() {
+    const { classes } = this.props;
+    const { address, areaToSearch } = this.state;
     return (
       // Variables can be either lat and lon OR address
       <Query
         query={RESTAURANT_SEARCH_QUERY}
         variables={{
-          address: this.state,
+          address,
         }}
       >
         {({ loading, error, data = {} }) => {
@@ -101,6 +139,13 @@ class SearchPage extends Component {
                     lg={8}
                     xl={4}
                   >
+                    <div className={classes.main}>
+                      <SearchBox
+                        areaToSearch={areaToSearch}
+                        handleChange={this.handleChange}
+                        getLocation={this.getLocation}
+                      />
+                    </div>
                     <Map
                       rests={data.search_restaurants.results}
                     />
@@ -118,4 +163,4 @@ class SearchPage extends Component {
   }
 }
 
-export default SearchPage;
+export default withStyles(styles)(SearchPage);
