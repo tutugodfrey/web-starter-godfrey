@@ -10,21 +10,32 @@ import { RESTAURANT_SEARCH_QUERY } from '../../graphql/queries';
 
 import ResturantCard from './ResturantCard';
 import SearchBox from './SearchBox';
+import LocationButton from './LocationButton';
 import Map from '../Map';
 
-const styles = {
-  main: {
+const API_KEY = process.env.REACT_APP_MAP_API_KEY;
+const styles = (theme) => ({
+  root: {
+    display: 'grid',
+    flexGrow: 1,
     position: 'fixed',
     top: '5px',
     zIndex: 50,
-    margin: '4px 10px'
-  }
-};
+    margin: '4px 10px',
+    width: '100%',
+  },
+  paper: {
+    padding: theme.spacing.unit * 2,
+    textAlign: 'center',
+    justify: 'center',
+  },
+});
 
 class SearchPage extends Component {
   state = {
     address: 'Chicago',
     areaToSearch: '',
+    useMyLocation: false,
   }
 
   componentDidMount() {
@@ -38,7 +49,7 @@ class SearchPage extends Component {
     });
   }
 
-  showComplete = (event, restDetails, field) => {
+  formatText = (event, restDetails, field) => {
     if (field === 'address') {
       const content = event.target.innerHTML;
       if (content.length > 35 && content.indexOf('...') === -1) {
@@ -67,6 +78,7 @@ class SearchPage extends Component {
       this.setState({
         ...this.state,
         address: areaToSearch,
+        useMyLocation: false,
       });
     }
   }
@@ -80,9 +92,43 @@ class SearchPage extends Component {
     });
   }
 
+  // enable users use their location
+  handleUseMyLocation = (event) => {
+    event.preventDefault();
+    let latLng;
+    let state;
+    if (navigator && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const coords = pos.coords;
+        latLng = `${coords.latitude},${coords.longitude}`;
+        fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latLng}&key=${API_KEY}`)
+          .then((res) => res.json())
+          .then((data) => {
+            try {
+              console.log(data, 'response');
+              const compoundCode = data.plus_code.compound_code;
+              state = compoundCode.split(' ')[1];
+              const length = state.length - 1;
+              state = state.substr(0, length);
+              this.setState({
+                ...this.state,
+                areaToSearch: '',
+                useMyLocation: true,
+                lat: coords.latitude,
+                lng: coords.longitude,
+                address: state,
+              });
+            } catch(err) {
+              console.log(err);
+            }
+          });
+      });
+    }
+  }
+
   render() {
     const { classes } = this.props;
-    const { address, areaToSearch } = this.state;
+    const { address, areaToSearch, useMyLocation, lat, lng } = this.state;
     return (
       // Variables can be either lat and lon OR address
       <Query
@@ -124,8 +170,7 @@ class SearchPage extends Component {
                       return (
                         <ResturantCard
                           restDetails={r}
-                          showComplete={this.showComplete}
-                          showTruncated={this.showTruncated}
+                          formatText={this.formatText}
                         />
                       );
                     })}
@@ -139,15 +184,29 @@ class SearchPage extends Component {
                     lg={8}
                     xl={4}
                   >
-                    <div className={classes.main}>
-                      <SearchBox
-                        areaToSearch={areaToSearch}
-                        handleChange={this.handleChange}
-                        getLocation={this.getLocation}
-                      />
+                    <div className={classes.root}>
+                      <Grid container>
+                        <Grid item xs={2}>
+                          <LocationButton
+                            handleUseMyLocation={this.handleUseMyLocation}
+                            className={classes.paper}
+                          />
+                        </Grid>
+                        <Grid item xs={3}>
+                          <SearchBox
+                            areaToSearch={areaToSearch}
+                            handleChange={this.handleChange}
+                            getLocation={this.getLocation}
+                            className={classes.paper}
+                          />
+                        </Grid>
+                      </Grid>
                     </div>
                     <Map
                       rests={data.search_restaurants.results}
+                      lat={lat}
+                      lng={lng}
+                      useMyLocation={useMyLocation}
                     />
                   </Grid>
                 </Grid>
