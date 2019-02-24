@@ -9,7 +9,8 @@ export class MapContainer extends React.Component {
     lng: 0,
     restTitle: '',
     infoWindowVisible: false,
-    activeMarker: {}
+    useMyLocation: false,
+    activeMarker: {},
   };
 
   onMarkerClick = (props, marker, e) => {
@@ -29,30 +30,57 @@ export class MapContainer extends React.Component {
 
   componentWillMount = () => {
     // set map center to user current location
-    const {rests } = this.props;
-    if (navigator && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const coords = pos.coords;
-        this.setState({
-          lat: coords.latitude,
-          lng: coords.longitude
-        });
-      });
-    }
+    const { rests, lat, lng, useMyLocation } = this.props;
 
     // this will overide the definition above
     // using the lat and lon of one of the restaurants
     if (rests[0].lat && rests[0].lon) {
+      let latr = rests[0].lat;
+      let lngr = rests[0].lon;
+
+      if (useMyLocation) {
+        latr = lat;
+        lngr = lng;
+      }
+
       this.setState({
-        lat: rests[0].lat,
-        lng: rests[0].lon,
+        lat: latr,
+        lng: lngr,
+        useMyLocation,
       });
     }
   }
 
+  componentWillUpdate = (nextProps) => {
+    const {rests, lat, lng, useMyLocation } = nextProps;
+    if (useMyLocation === true) {
+      this.state.useMyLocation = true;
+      this.state.lat = lat;
+      this.state.lng = lng;
+    }
+
+    if (!useMyLocation) {
+      const latr = rests[0].lat;
+      const lngr = rests[0].lon;
+
+      // reset the value from user location
+      this.state.useMyLocation = false;
+      this.state.lat = latr;
+      this.state.lng = lngr;
+    }
+  }
+
   render() {
-    const { google, rests } = this.props;
-    const { restTitle, infoWindowVisible, activeMarker, lat, lng } = this.state;
+    const { google, rests, userLocation } = this.props;
+    const {
+      restTitle,
+      infoWindowVisible,
+      activeMarker,
+      lat,
+      lng,
+      useMyLocation
+    } = this.state;
+    let userMarker;
     const markers = rests.map((restDetail) => {
       return (
         <Marker
@@ -60,9 +88,24 @@ export class MapContainer extends React.Component {
           onClick={this.onMarkerClick}
           name={restDetail.title}
           position={{lat: restDetail.lat, lng: restDetail.lon}}
+          icon="https://maps.google.com/mapfiles/kml/pal2/icon32.png"
         />
       );
     });
+
+    if (useMyLocation) {
+      userMarker = (
+        <Marker
+          onClick={this.onMarkerClick}
+          position={{lat, lng}}
+          name={userLocation}
+          map={google.Map}
+          icon="https://maps.google.com/mapfiles/kml/pal4/icon52.png"
+        />
+      );
+    } else {
+      userMarker = undefined;
+    }
     return (
       <Map
         google={google}
@@ -71,8 +114,13 @@ export class MapContainer extends React.Component {
           lat,
           lng,
         }}
+        center={{
+          lat,
+          lng,
+        }}
         onClick={this.onMapClicked}
       >
+        {userMarker}
         {markers}
         <InfoWindow
           onClose={this.onInfoWindowClose}

@@ -7,27 +7,33 @@ import SearchIcon from '@material-ui/icons/Search';
 
 const styles = {
   root: {
-    padding: '2px 2px',
-    display: 'flex',
-    alignItems: 'center',
-    width: 225,
     borderRadius: 100,
   },
   input: {
     marginLeft: 2,
-    flex: 1,
     size: 10,
+    fontSize: '0.7em',
+    height: '33px',
+    width: '80%',
   },
   iconButton: {
-    padding: 5,
+    paddingRight: 5,
+    height: '33px',
+    position: 'relative',
+    top: '-4px'
   },
 };
 
 const SearchBox = (props) => {
-  const { classes, getLocation, areaToSearch, handleChange } = props;
+  const {
+    classes,
+    getLocation,
+    areaToSearch,
+    handleChange
+  } = props;
 
   return (
-    <Paper className={classes.root} elevation={1}>
+    <Paper className={classes.root}>
       <IconButton className={classes.iconButton} aria-label="Search">
         <SearchIcon onClick={getLocation} id="search-icon" />
       </IconButton>

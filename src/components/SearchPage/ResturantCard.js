@@ -42,13 +42,13 @@ const styles = (theme) => ({
   },
   link: {
     textDecoration: 'none',
-    position:'relative',
+    position: 'relative',
   }
 });
 
 const ResturantCard = (props) => {
   const { classes } = props;
-  const { restDetails, showComplete } = props;
+  const { restDetails, formatText } = props;
   const image = restDetails.images;
   let { distance, title, address } = restDetails;
   let addressCursor = 'default';
@@ -71,7 +71,7 @@ const ResturantCard = (props) => {
               variant="title"
               color="textSecondary"
               onMouseDown={
-                (event) => showComplete(event, restDetails, 'title')}
+                (event) => formatText(event, restDetails, 'title')}
               className={classes.titleTypograph}
             >
               {title}
@@ -87,7 +87,7 @@ const ResturantCard = (props) => {
               color="textSecondary"
               style={{display: 'inline', cursor: addressCursor}}
               onMouseDown={
-                (event) => showComplete(event, restDetails, 'address')}
+                (event) => formatText(event, restDetails, 'address')}
             >
               {address}
             </Typography>
