@@ -1,15 +1,12 @@
 # Foodsy
-This is the world's best food App.
+This is the world's best food App. Foodsy provides features to allow you search for restaurants near you.
 
 ## Setup
 - Clone the code from the repo
 - Run `npm i` to install packages
+- To use the map features please ensure to add the google map API_KEY to .env files  or export it to env as REACT_APP_MAP_API_KEY=
+- Please enable Geocoding API and Maps JavaScript API for your api.
+- Run `npm start` to start the application
 
-## Other Instructions
-- Please complete the tickets you've been assigned
-- Use separate branches for each ticket
-- Create pull requests for each branch and merge the pull requests into master once it is complete
-- Write clean, concise and readable code
-- Ensure your code lints cleanly with `npm run lint`
-- Use material design for components where possible
-- Update the README.md with any additional dependancies or setup instructions
+## Author
+Tutu Godfrey <godfrey_tutu@yahoo.com>
