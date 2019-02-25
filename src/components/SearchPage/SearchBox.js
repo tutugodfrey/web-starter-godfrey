@@ -8,19 +8,21 @@ import SearchIcon from '@material-ui/icons/Search';
 const styles = {
   root: {
     borderRadius: 100,
+    width: '100%',
+    fontSize: '0.6em',
   },
   input: {
     marginLeft: 2,
     size: 10,
-    fontSize: '0.7em',
     height: '33px',
-    width: '80%',
+    width: '73%',
   },
   iconButton: {
-    paddingRight: 5,
-    height: '33px',
+    height: '30px',
     position: 'relative',
-    top: '-4px'
+    top: '-8px',
+    left: '4px',
+    width: '15%',
   },
 };
 

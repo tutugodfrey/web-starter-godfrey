@@ -8,9 +8,9 @@ const styles = (theme) => ({
   button: {
     borderRadius: 100,
     height: '35px',
-    fontSize: '0.7em',
+    fontSize: '0.8em',
     backgroundImage: 'linear-gradient(to right, #FFB300, #FF9900)',
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   place: {
     paddingRight: '3px'
