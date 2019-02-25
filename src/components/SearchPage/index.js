@@ -4,6 +4,7 @@ import queryString from 'query-string';
 import { Query } from 'react-apollo';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 
 import { RESTAURANT_SEARCH_QUERY } from '../../graphql/queries';
@@ -11,23 +12,38 @@ import { RESTAURANT_SEARCH_QUERY } from '../../graphql/queries';
 import ResturantCard from './ResturantCard';
 import SearchBox from './SearchBox';
 import LocationButton from './LocationButton';
-import Map from '../Map';
+import MapWithAMarker from '../Map';
 
 const API_KEY = process.env.REACT_APP_MAP_API_KEY;
 const styles = (theme) => ({
   root: {
-    display: 'grid',
     flexGrow: 1,
     position: 'fixed',
-    top: '5px',
-    zIndex: 50,
-    margin: '4px 10px',
-    width: '100%',
+    zIndex: 600,
+    width: '99%',
+    top: '4px',
+    paddingLeft: '10px',
   },
   paper: {
     padding: theme.spacing.unit * 2,
-    textAlign: 'center',
-    justify: 'center',
+  },
+  signupBtn: {
+    borderRadius: 100,
+    color: 'black',
+    backgroundColor: 'white'
+  },
+  signinBtn: {
+    borderRadius: 100,
+    background: 'transparent',
+    color: 'white',
+  },
+  largeScreen: {
+    position: 'relative',
+    left: '8%',
+  },
+  largerScreen: {
+    position: 'relative',
+    left: '35%',
   },
 });
 
@@ -37,6 +53,7 @@ class SearchPage extends Component {
     areaToSearch: '',
     useMyLocation: false,
     userLocation: 'You are here',
+    activeMarker: {},
   }
 
   componentDidMount() {
@@ -48,25 +65,6 @@ class SearchPage extends Component {
       ...this.state,
       address: address || 'Chicago',
     });
-  }
-
-  formatText = (event, restDetails, field) => {
-    if (field === 'address') {
-      const content = event.target.innerHTML;
-      if (content.length > 35 && content.indexOf('...') === -1) {
-        event.target.innerHTML = `${restDetails.address.substr(0, 35)}...`;
-      } else {
-        event.target.innerHTML = restDetails.address;
-      }
-    }
-    if (field === 'title') {
-      const content = event.target.textContent;
-      if (content.length > 20 && content.indexOf('...') === -1) {
-        event.target.textContent = `${restDetails.address.substr(0, 20)}...`;
-      } else {
-        event.target.textContent = restDetails.address;
-      }
-    }
   }
 
   // triger a search when search icon is click
@@ -138,6 +136,14 @@ class SearchPage extends Component {
       lat,
       lng,
     } = this.state;
+
+    // alter style for larger screens to
+    // display signup and signin buttons
+    let signinSignup = classes.largeScreen;
+    const mq = window.matchMedia('(min-width: 1200px)');
+    if (mq.matches) {
+      signinSignup = classes.largerScreen;
+    }
     return (
       // Variables can be either lat and lon OR address
       <Query
@@ -158,50 +164,50 @@ class SearchPage extends Component {
             && data.search_restaurants.results.length > 0
           ) {
             return (
-              <div>
+              <Grid
+                container
+                direction="row"
+                justify="center"
+                style={{height: '100vh' }}
+              >
                 <Grid
-                  container
-                  direction="row"
-                  justify="center"
-                  style={{height: '100vh' }}
+                  item
+                  xs={12}
+                  sm={5}
+                  md={4}
+                  lg={3}
+                  xl={4}
+                  style={{height: '100vh', overflow: 'scroll' }}
                 >
-                  <Grid
-                    column
-                    item
-                    xs={12}
-                    sm={12}
-                    md={5}
-                    lg={4}
-                    xl={4}
-                    style={{height: '100vh', overflow: 'scroll' }}
-                  >
-                    {data.search_restaurants.results.map((r) => {
-                      return (
-                        <ResturantCard
-                          restDetails={r}
-                          formatText={this.formatText}
-                        />
-                      );
-                    })}
-                  </Grid>
-                  <Grid
-                    id="mapContainer"
-                    column
-                    xs="none"
-                    sm="none"
-                    md={7}
-                    lg={8}
-                    xl={4}
-                  >
-                    <div className={classes.root}>
-                      <Grid container>
-                        <Grid item xs={2}>
+                  {data.search_restaurants.results.map((r) => {
+                    return <ResturantCard restDetails={r} />;
+                  })}
+                </Grid>
+                <Grid
+                  id="mapContainer"
+                  xs="none"
+                  sm={7}
+                  md={8}
+                  lg={9}
+                  xl={8}
+                >
+                  <Grid container className={classes.root}>
+                    <Grid item xs={12}>
+                      <Grid
+                        container
+                        direction="row"
+                        spacing={16}
+                        alignItems="center"
+                        justify="flex-start"
+                        style={{border: '1px solid red'}}
+                      >
+                        <Grid key={1} item>
                           <LocationButton
                             handleUseMyLocation={this.handleUseMyLocation}
                             className={classes.paper}
                           />
                         </Grid>
-                        <Grid item xs={3}>
+                        <Grid key={2} item xs={3} lg={2} xl={2}>
                           <SearchBox
                             areaToSearch={areaToSearch}
                             handleChange={this.handleChange}
@@ -209,18 +215,34 @@ class SearchPage extends Component {
                             className={classes.paper}
                           />
                         </Grid>
+                        <Grid key={2} item className={signinSignup}>
+                          <Button variant="contained" className={classes.signinBtn}>
+                            Log In
+                          </Button>
+                        </Grid>
+                        <Grid key={2} item className={signinSignup}>
+                          <Button variant="contained" className={classes.signupBtn}>
+                            Sign Up
+                          </Button>
+                        </Grid>
                       </Grid>
-                    </div>
-                    <Map
+                    </Grid>
+                  </Grid>
+                  <Grid>
+                    <MapWithAMarker
+                      googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${API_KEY}&v=3.exp&libraries=geometry,drawing,places`}
+                      loadingElement={<div style={{ height: '100%' }} />}
+                      containerElement={<div style={{ height: '100vh' }} />}
+                      mapElement={<div style={{ height: '100%' }} />}
                       rests={data.search_restaurants.results}
-                      lat={lat}
-                      lng={lng}
                       useMyLocation={useMyLocation}
                       userLocation={userLocation}
+                      lat={lat}
+                      lng={lng}
                     />
                   </Grid>
                 </Grid>
-              </div>
+              </Grid>
             );
           }
 

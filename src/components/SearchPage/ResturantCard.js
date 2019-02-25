@@ -10,19 +10,22 @@ import Place from '@material-ui/icons/Place';
 import { Link } from 'react-router-dom';
 
 const styles = (theme) => ({
-  card: {
-    display: 'flex',
-    'border-radius': '5px',
-  },
-  details: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
   content: {
     flex: '1 0 auto',
     padding: '15px',
   },
-  cover: {
+  card: {
+    display: 'flex',
+    'border-radius': '5px',
+  },
+  cardContent: {
+    flex: '1 0 auto',
+    padding: '15px',
+    width: '65%',
+  },
+  cardMedia: {
+    display: 'flex',
+    flexDirection: 'row',
     width: 151,
   },
   primary: {
@@ -34,79 +37,87 @@ const styles = (theme) => ({
     top: '5px',
     right: '3px',
   },
-  titleTypograph: {
+  titleStyle: {
+    display: 'block',
+    fontSize: '1em',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+  },
+  pTitle: {
     display: 'inline',
     position: 'relative',
-    top: '-5px',
-    left: '3px',
+    top: '-7px',
   },
   link: {
     textDecoration: 'none',
     position: 'relative',
+  },
+  paperStyle: {
+    background: 'transparent',
+    square: false,
+    paddingTop: '3px',
+  },
+  addressStyle: {
+    display: 'block',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   }
 });
 
 const ResturantCard = (props) => {
   const { classes } = props;
-  const { restDetails, formatText } = props;
+  const { restDetails } = props;
   const image = restDetails.images;
-  let { distance, title, address } = restDetails;
-  let addressCursor = 'default';
-  if (title.length > 20) {
-    title = `${title.substr(0, 20)}...`;
-  }
+  const { title, address } = restDetails;
+  let { distance } = restDetails;
 
-  if (address.length > 35) {
-    address = `${address.substr(0, 35)}...`;
-    addressCursor = 'pointer';
-  }
   distance = distance ? distance.toPrecision(3) : distance;
   return (
     <div variant="contained" className={`${classes.content}`}>
       <Card className={classes.card}>
-        <CardContent className={classes.content}>
+        <CardContent className={classes.cardContent}>
           <Link className={classes.link} to={`rest/${restDetails.id}`}>
-            <Place color="primary" />
             <Typography
               variant="title"
               color="textSecondary"
-              onMouseDown={
-                (event) => formatText(event, restDetails, 'title')}
-              className={classes.titleTypograph}
+              className={classes.titleStyle}
             >
-              {title}
+              <Place color="primary" />
+              <p className={classes.pTitle}>{title}</p>
             </Typography>
           </Link>
           <Typography variant="subtitle3" color="textPrimary">
             {restDetails.cuisine}
           </Typography>
           <Fragment>
-            <Grade color="textSecondary" className={classes.addressGrade} />
             <Typography
               component="p"
               color="textSecondary"
-              style={{display: 'inline', cursor: addressCursor}}
-              onMouseDown={
-                (event) => formatText(event, restDetails, 'address')}
+              className={classes.addressStyle}
             >
+              <Grade color="textSecondary" className={classes.addressGrade} />
               {address}
             </Typography>
           </Fragment>
 
         </CardContent>
         <CardMedia
-          className={`${classes.cover} ${classes.details}`}
+          className={classes.cardMedia}
           image={image ? image[0] : 'default.jpg'}
           p={1}
         />
       </Card>
-      <span className={`${classes.primary}`} style={{marginRight: '5px'}}>{restDetails.open_closed}</span>
-      <span className={`${classes.primary}`} style={{marginRight: '5px'}}>
-        *
-      </span>
-      <span className={` ${classes.primary}`} style={{marginRight: '5px'}}>{distance} miles away</span>
-      <span style={{marginRight: '5px'}}><DirectionsWalk color="primary" />10min</span>
-      <span style={{marginRight: '5px'}}><Grade color="primary" /> {restDetails.rating}</span>
+      <div className={classes.paperStyle}>
+        <span className={`${classes.primary}`} style={{marginRight: '5px'}}>{restDetails.open_closed}</span>
+        <span className={`${classes.primary}`} style={{marginRight: '5px'}}>
+          *
+        </span>
+        <span className={` ${classes.primary}`} style={{marginRight: '5px'}}>{distance} miles away</span>
+        <span style={{marginRight: '5px'}}><DirectionsWalk color="primary" />10min</span>
+        <span style={{marginRight: '5px'}}><Grade color="primary" /> {restDetails.rating}</span>
+      </div>
     </div>
   );
 };
