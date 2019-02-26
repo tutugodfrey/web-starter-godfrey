@@ -37,13 +37,17 @@ const styles = (theme) => ({
     background: 'transparent',
     color: 'white',
   },
+  mediumScreen: {
+    position: 'relative',
+    left: '20%',
+  },
   largeScreen: {
     position: 'relative',
-    left: '8%',
+    left: '2%',
   },
   largerScreen: {
     position: 'relative',
-    left: '35%',
+    left: '25%',
   },
 });
 
@@ -139,10 +143,13 @@ class SearchPage extends Component {
 
     // alter style for larger screens to
     // display signup and signin buttons
-    let signinSignup = classes.largeScreen;
-    const mq = window.matchMedia('(min-width: 1200px)');
-    if (mq.matches) {
+    let signinSignup = classes.mediumScreen;
+    const large = window.matchMedia('(min-width: 1000px)');
+    const larger = window.matchMedia('(min-width: 1200px)');
+    if (large.matches && larger.matches) {
       signinSignup = classes.largerScreen;
+    } else if (large.matches) {
+      signinSignup = classes.largeScreen;
     }
     return (
       // Variables can be either lat and lon OR address
@@ -199,7 +206,6 @@ class SearchPage extends Component {
                         spacing={16}
                         alignItems="center"
                         justify="flex-start"
-                        style={{border: '1px solid red'}}
                       >
                         <Grid key={1} item>
                           <LocationButton
